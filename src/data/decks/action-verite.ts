@@ -60,6 +60,11 @@ export const ACTIONS: string[] = [
   'Fais un compliment à {autre}… mais chanté.',
   'Imite une pub que tout le monde connaît.',
   'Tiens la planche pendant que le groupe compte jusqu’à 20, ou bois.',
+  'Échange un vêtement avec {autre} jusqu’à ton prochain tour.',
+  'Laisse {autre} publier un statut de ton choix… écrit par lui/elle.',
+  'Fais un duo de danse improvisé avec {autre}.',
+  'Donne trois qualités et un défaut de {autre}, sans réfléchir.',
+  'Refais la démarche de {autre} à la perfection.',
 ];
 
 export const VERITES: string[] = [
@@ -119,6 +124,11 @@ export const VERITES: string[] = [
   'Quel est le pire cadeau que tu aies reçu ?',
   'Quelle est ta théorie du complot préférée ?',
   'Quel surnom détestes-tu qu’on te donne ?',
+  'Quelle est la première chose que tu as pensée en voyant {autre} ?',
+  'Si tu devais partir en week-end avec {autre}, vous feriez quoi ?',
+  'Quel secret confierais-tu à {autre} sans hésiter ?',
+  'Qu’est-ce que {autre} fait mieux que toi (avoue-le) ?',
+  'Quel surnom colle parfaitement à {autre} ?',
 ];
 
 // ---- Version HARDCORE (18+ assumé, coquin). Contact = consenti, sinon « ou bois ». ----
