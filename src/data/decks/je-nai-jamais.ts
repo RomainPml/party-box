@@ -58,6 +58,17 @@ export const JAMAIS: string[] = [
   'fait tomber mon téléphone sur mon visage au lit.',
   'ri d’une blague que je n’avais pas comprise.',
   'mangé le dernier bout en cachette.',
+
+  // ---- Cartes qui citent un participant ({autre} = un joueur au hasard) ----
+  'eu un crush sur {autre} à un moment donné.',
+  'menti à {autre} au moins une fois.',
+  'copié le style ou une phrase de {autre}.',
+  'été un peu jaloux(se) de {autre}.',
+  'stalké {autre} sur les réseaux.',
+  'oublié de répondre à un message de {autre} exprès.',
+  'ri d’une blague de {autre} par pure politesse.',
+  'gardé un truc que {autre} m’avait prêté.',
+  'pensé que {autre} avait tort mais rien dit.',
 ];
 
 // ---- Version HARDCORE (18+ assumé, coquin). Celui qui l'a fait boit. ----
@@ -89,4 +100,12 @@ export const JAMAIS_HOT: string[] = [
   'attendu 3 jours avant de répondre, exprès.',
   'envoyé un message et regretté à la seconde.',
   'craqué pour quelqu’un juste pour sa voix.',
+
+  // ---- Cartes qui citent un participant ({autre} = un joueur au hasard) ----
+  'fantasmé sur {autre}.',
+  'imaginé embrasser {autre}.',
+  'rêvé de {autre} d’une manière un peu gênante.',
+  'trouvé {autre} attirant(e) au premier regard.',
+  'checké {autre} de haut en bas discrètement.',
+  'eu une pensée pas très catholique en regardant {autre}.',
 ];
