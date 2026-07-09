@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Pressable, SectionList, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, SectionList, StyleSheet, View, type TextStyle } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { GameCard } from '@/components/GameCard';
@@ -94,6 +94,12 @@ export default function MenuScreen() {
   );
 }
 
+/** Text neon glow, skipped on web where RN deprecates the textShadow* props. */
+const textGlow = (color: string, radius: number): TextStyle =>
+  Platform.OS === 'web'
+    ? {}
+    : { textShadowColor: color, textShadowOffset: { width: 0, height: 0 }, textShadowRadius: radius };
+
 const styles = StyleSheet.create({
   list: {
     padding: spacing.lg,
@@ -104,19 +110,13 @@ const styles = StyleSheet.create({
   },
   headerBlock: { marginBottom: spacing.sm },
   kicker: { letterSpacing: 2, marginBottom: spacing.xs },
+  // Soft violet neon halo. Native only — RN Web deprecates textShadow* props.
   wordmark: {
     marginBottom: spacing.xl,
-    // Soft violet neon halo around the wordmark.
-    textShadowColor: palette.violet + '80',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 22,
+    ...textGlow(palette.violet + '80', 22),
   },
   // Stronger, tighter glow on the accented "Box".
-  wordmarkAccent: {
-    textShadowColor: palette.violet,
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 18,
-  },
+  wordmarkAccent: textGlow(palette.violet, 18),
   playersBanner: {
     flexDirection: 'row',
     alignItems: 'center',
