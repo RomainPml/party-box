@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { ZoomIn } from 'react-native-reanimated';
 
+import { DiscussStep } from '@/components/game/DiscussStep';
 import { Gate } from '@/components/game/Gate';
 import { PassPhone } from '@/components/game/PassPhone';
+import { VotePicker } from '@/components/game/VotePicker';
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { Txt } from '@/components/ui/Txt';
 import type { GameMeta } from '@/data/games';
 import { CATEGORIES, pickWord, type WordCategory } from '@/data/words';
-import { notify, tap } from '@/lib/haptics';
+import { tap } from '@/lib/haptics';
 import type { Player } from '@/store/useGameStore';
 import { useGameStore } from '@/store/useGameStore';
 import { palette, radius, spacing } from '@/theme';
@@ -169,53 +171,25 @@ export function Imposteur({ game }: { game: GameMeta }) {
         )}
 
         {phase === 'discuss' && (
-          <View style={styles.center}>
-            <Txt style={styles.emoji}>🗣️</Txt>
-            <Txt variant="title" style={{ textAlign: 'center' }}>
-              À vous de jouer
-            </Txt>
-            <Txt variant="muted" style={{ textAlign: 'center' }}>
-              Chacun son tour, donnez un mot lié au mot secret.{'\n'}
-              Repérez celui qui bluffe… puis votez.
-            </Txt>
-            <View style={styles.actions}>
-              <Button label="Passer au vote" accent={accent} onPress={() => setPhase('vote')} />
-            </View>
-          </View>
+          <DiscussStep
+            title="À vous de jouer"
+            description={'Chacun son tour, donnez un mot lié au mot secret.\nRepérez celui qui bluffe… puis votez.'}
+            cta="Passer au vote"
+            accent={accent}
+            onNext={() => setPhase('vote')}
+          />
         )}
 
         {phase === 'vote' && (
-          <View style={styles.playWrap}>
-            <View style={[styles.card, { borderColor: accent }]}>
-              <Txt variant="title" style={{ textAlign: 'center', fontSize: 24 }}>
-                Qui est l’imposteur ?
-              </Txt>
-            </View>
-            <View style={styles.grid}>
-              {players.map((p) => (
-                <Pressable
-                  key={p.id}
-                  onPress={() => {
-                    notify('warning');
-                    setAccused(p);
-                    setPhase('result');
-                  }}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Voter contre ${p.name}`}
-                  style={({ pressed }) => [
-                    styles.chip,
-                    { borderColor: pressed ? p.color : palette.border },
-                    pressed && { backgroundColor: p.color + '1F' },
-                  ]}
-                >
-                  <View style={[styles.chipDot, { backgroundColor: p.color }]} />
-                  <Txt variant="heading" style={{ fontSize: 16 }} numberOfLines={1}>
-                    {p.name}
-                  </Txt>
-                </Pressable>
-              ))}
-            </View>
-          </View>
+          <VotePicker
+            question="Qui est l’imposteur ?"
+            players={players}
+            accent={accent}
+            onPick={(p) => {
+              setAccused(p);
+              setPhase('result');
+            }}
+          />
         )}
 
         {phase === 'result' && impostor && (
@@ -297,7 +271,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
 
-  playWrap: { flex: 1, justifyContent: 'center', gap: spacing.lg },
   card: {
     alignSelf: 'stretch',
     borderRadius: radius.xl,
@@ -312,15 +285,4 @@ const styles = StyleSheet.create({
   cardBig: { fontSize: 34, textAlign: 'center' },
 
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, justifyContent: 'center' },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: palette.surface,
-    borderRadius: radius.pill,
-    borderWidth: 1.5,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-  },
-  chipDot: { width: 10, height: 10, borderRadius: 5 },
 });
