@@ -1,98 +1,109 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
+import { Pressable, SectionList, StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { GameCard } from '@/components/GameCard';
+import { Screen } from '@/components/ui/Screen';
+import { Txt } from '@/components/ui/Txt';
+import { GAME_CATEGORIES, GAMES, type GameMeta } from '@/data/games';
+import { tap } from '@/lib/haptics';
+import { useGameStore } from '@/store/useGameStore';
+import { palette, radius, spacing } from '@/theme';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+// Group games into menu sections, keeping only non-empty categories.
+const SECTIONS = GAME_CATEGORIES.map((c) => ({
+  label: c.label,
+  emoji: c.emoji,
+  data: GAMES.filter((g) => (g.category ?? 'party') === c.id),
+})).filter((s) => s.data.length > 0);
+
+export default function MenuScreen() {
+  const players = useGameStore((s) => s.players);
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <Screen glowColor={palette.violet}>
+      <SectionList
+        sections={SECTIONS}
+        keyExtractor={(g) => g.id}
+        contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={false}
+        stickySectionHeadersEnabled={false}
+        ListHeaderComponent={
+          <Animated.View style={styles.headerBlock} entering={FadeInDown.duration(420)}>
+            <Txt variant="caption" color={palette.textFaint} style={styles.kicker}>
+              JEUX DE SOIRÉE
+            </Txt>
+            <Txt variant="display" style={styles.wordmark}>
+              Party<Txt variant="display" color={palette.violet}>Box</Txt>
+            </Txt>
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+            <Pressable
+              onPress={() => {
+                tap('light');
+                router.push('/players');
+              }}
+              style={({ pressed }) => [styles.playersBanner, pressed && { opacity: 0.85 }]}
+            >
+              <View style={styles.playersLeft}>
+                <Txt style={styles.playersEmoji}>👥</Txt>
+                <View>
+                  <Txt variant="heading" style={{ fontSize: 16 }}>
+                    {players.length === 0
+                      ? 'Aucun joueur'
+                      : `${players.length} joueur${players.length > 1 ? 's' : ''}`}
+                  </Txt>
+                  <Txt variant="muted">
+                    {players.length === 0 ? 'Ajoute les participants' : 'Gérer les joueurs'}
+                  </Txt>
+                </View>
+              </View>
+              <Txt variant="heading" color={palette.textMuted}>
+                ›
+              </Txt>
+            </Pressable>
+          </Animated.View>
+        }
+        renderSectionHeader={({ section }) => (
+          <View style={styles.sectionHeader}>
+            <Txt variant="label" color={palette.textMuted} style={styles.sectionLabel}>
+              {section.emoji}  {section.label.toUpperCase()}
+            </Txt>
+          </View>
+        )}
+        renderItem={({ item, index }: { item: GameMeta; index: number }) => (
+          <Animated.View entering={FadeInDown.delay(40 + index * 40).duration(360)} style={styles.itemWrap}>
+            <GameCard game={item} onPress={() => router.push(`/game/${item.id}`)} />
+          </Animated.View>
+        )}
+      />
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
+  list: {
+    padding: spacing.lg,
+    paddingBottom: spacing.xxxl,
+    maxWidth: 640,
+    width: '100%',
+    alignSelf: 'center',
+  },
+  headerBlock: { marginBottom: spacing.sm },
+  kicker: { letterSpacing: 2, marginBottom: spacing.xs },
+  wordmark: { marginBottom: spacing.xl },
+  playersBanner: {
     flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
     alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+    justifyContent: 'space-between',
+    backgroundColor: palette.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: palette.border,
+    padding: spacing.md,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+  playersLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  playersEmoji: { fontSize: 28 },
+  sectionHeader: { marginTop: spacing.xl, marginBottom: spacing.md },
+  sectionLabel: { letterSpacing: 1.5 },
+  itemWrap: { marginBottom: spacing.md },
 });
