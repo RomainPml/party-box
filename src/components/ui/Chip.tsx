@@ -24,6 +24,9 @@ export function Chip({
         tap('light');
         onPress();
       }}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ selected }}
       style={({ pressed }) => [
         {
           flexDirection: 'row',

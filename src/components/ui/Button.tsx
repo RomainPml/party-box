@@ -34,6 +34,9 @@ export function Button({
         onPress?.();
       }}
       disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled }}
       style={({ pressed }) => [
         styles.base,
         fullWidth && styles.fullWidth,

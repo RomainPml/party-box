@@ -200,6 +200,8 @@ export function Imposteur({ game }: { game: GameMeta }) {
                     setAccused(p);
                     setPhase('result');
                   }}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Voter contre ${p.name}`}
                   style={({ pressed }) => [
                     styles.chip,
                     { borderColor: pressed ? p.color : palette.border },

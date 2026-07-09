@@ -72,6 +72,8 @@ export function Screen({ children, title, showBack = false, glowColor = palette.
                   else router.replace('/');
                 }}
                 hitSlop={12}
+                accessibilityRole="button"
+                accessibilityLabel="Retour"
                 style={({ pressed }) => [styles.backBtn, pressed && { opacity: 0.6 }]}
               >
                 <Txt variant="heading" color={palette.text}>

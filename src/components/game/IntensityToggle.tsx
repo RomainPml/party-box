@@ -26,6 +26,9 @@ export function IntensityToggle() {
               tap('light');
               setSetting('intensity', o.id);
             }}
+            accessibilityRole="button"
+            accessibilityLabel={o.label}
+            accessibilityState={{ selected }}
             style={[
               styles.chip,
               { borderColor: selected ? o.color : palette.border },

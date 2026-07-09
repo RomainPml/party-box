@@ -115,6 +115,8 @@ export function Designation({ game }: { game: GameMeta }) {
                 <Pressable
                   key={p.id}
                   onPress={() => designate(p)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Désigner ${p.name}`}
                   style={({ pressed }) => [
                     styles.chip,
                     { borderColor: pressed ? p.color : palette.border },

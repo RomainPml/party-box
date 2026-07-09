@@ -44,6 +44,12 @@ export default function MenuScreen() {
                 tap('light');
                 router.push('/players');
               }}
+              accessibilityRole="button"
+              accessibilityLabel={
+                players.length === 0
+                  ? 'Aucun joueur. Ajouter des participants'
+                  : `${players.length} joueurs. Gérer les joueurs`
+              }
               style={({ pressed }) => [
                 styles.playersBanner,
                 gradient(`linear-gradient(120deg, ${mix(palette.surface, palette.violet, 0.2)}, ${palette.surface} 60%)`),

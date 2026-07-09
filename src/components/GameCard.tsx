@@ -25,6 +25,8 @@ export function GameCard({ game, onPress }: { game: GameMeta; onPress: () => voi
         tap('light');
         onPress();
       }}
+      accessibilityRole="button"
+      accessibilityLabel={`${game.title}. ${game.tagline}${soon ? '. Bientôt disponible' : ''}`}
       style={({ pressed }) => [
         styles.card,
         cardWash,

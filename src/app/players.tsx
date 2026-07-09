@@ -51,6 +51,9 @@ export default function PlayersScreen() {
             <Pressable
               onPress={submit}
               disabled={!name.trim()}
+              accessibilityRole="button"
+              accessibilityLabel="Ajouter le joueur"
+              accessibilityState={{ disabled: !name.trim() }}
               style={({ pressed }) => [
                 styles.addBtn,
                 gradient(`linear-gradient(150deg, ${lighten(palette.violet, 0.2)}, ${darken(palette.violet, 0.14)})`),
@@ -92,6 +95,8 @@ export default function PlayersScreen() {
                       tap('light');
                       removePlayer(item.id);
                     }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Retirer ${item.name}`}
                     hitSlop={10}
                     style={({ pressed }) => [styles.removeBtn, pressed && { opacity: 0.6 }]}
                   >
