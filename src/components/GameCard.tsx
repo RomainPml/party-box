@@ -3,11 +3,21 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Txt } from '@/components/ui/Txt';
 import type { GameMeta } from '@/data/games';
 import { tap } from '@/lib/haptics';
-import { palette, radius, spacing } from '@/theme';
+import { glow, gradient, mix, palette, radius, spacing } from '@/theme';
 
 export function GameCard({ game, onPress }: { game: GameMeta; onPress: () => void }) {
   const accent = palette[game.accent];
   const soon = game.status === 'soon';
+
+  // Opaque accent wash across the card (corner tint → surface) so every game
+  // reads as its own colour — the menu becomes a colourful arcade grid.
+  const cardWash = gradient(
+    `linear-gradient(120deg, ${mix(palette.surface, accent, 0.16)}, ${palette.surface} 62%)`,
+  );
+  // Emoji tile: a punchier accent gradient that glows in its own colour.
+  const chipWash = gradient(
+    `linear-gradient(145deg, ${mix(palette.surface, accent, 0.5)}, ${mix(palette.surface, accent, 0.16)})`,
+  );
 
   return (
     <Pressable
@@ -17,11 +27,12 @@ export function GameCard({ game, onPress }: { game: GameMeta; onPress: () => voi
       }}
       style={({ pressed }) => [
         styles.card,
+        cardWash,
         { borderColor: pressed ? accent : palette.border },
-        pressed && { transform: [{ scale: 0.97 }] },
+        pressed && { transform: [{ scale: 0.97 }], ...glow(accent, 0.5) },
       ]}
     >
-      <View style={[styles.emojiWrap, { backgroundColor: accent + '22', borderColor: accent + '55' }]}>
+      <View style={[styles.emojiWrap, chipWash, { borderColor: accent + '66' }, glow(accent, 0.45)]}>
         <Txt style={styles.emoji}>{game.emoji}</Txt>
       </View>
 
@@ -41,7 +52,7 @@ export function GameCard({ game, onPress }: { game: GameMeta; onPress: () => voi
           </Txt>
         </View>
       ) : (
-        <View style={[styles.dot, { backgroundColor: accent }]} />
+        <View style={[styles.dot, { backgroundColor: accent }, glow(accent, 0.7)]} />
       )}
     </Pressable>
   );

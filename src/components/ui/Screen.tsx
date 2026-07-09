@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Txt } from '@/components/ui/Txt';
 import { tap } from '@/lib/haptics';
-import { palette, radius, spacing } from '@/theme';
+import { gradient, palette, radius, spacing } from '@/theme';
 
 type Props = {
   children: ReactNode;
@@ -38,12 +38,25 @@ export function Screen({ children, title, showBack = false, glowColor = palette.
 
   return (
     <View style={styles.root}>
-      {/* Ambient glow blobs (slow pulse) for the "premium dark" feel */}
+      {/* Ambient glow blobs — soft radial gradients (slow pulse) for a real
+          diffuse halo rather than a hard-edged disc. */}
       <Animated.View
-        style={[styles.glow, styles.glowTop, glowTopStyle, { backgroundColor: glowColor, pointerEvents: 'none' }]}
+        pointerEvents="none"
+        style={[
+          styles.glow,
+          styles.glowTop,
+          glowTopStyle,
+          gradient(`radial-gradient(circle at 50% 50%, ${glowColor}, transparent 70%)`),
+        ]}
       />
       <Animated.View
-        style={[styles.glow, styles.glowBottom, glowBottomStyle, { backgroundColor: palette.magenta, pointerEvents: 'none' }]}
+        pointerEvents="none"
+        style={[
+          styles.glow,
+          styles.glowBottom,
+          glowBottomStyle,
+          gradient(`radial-gradient(circle at 50% 50%, ${palette.magenta}, transparent 70%)`),
+        ]}
       />
 
       <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
@@ -85,13 +98,11 @@ const styles = StyleSheet.create({
   safe: { flex: 1 },
   glow: {
     position: 'absolute',
-    width: 380,
-    height: 380,
-    borderRadius: 190,
-    opacity: 0.16,
+    width: 620,
+    height: 620,
   },
-  glowTop: { top: -160, right: -120 },
-  glowBottom: { bottom: -180, left: -140, opacity: 0.1 },
+  glowTop: { top: -260, right: -220 },
+  glowBottom: { bottom: -300, left: -240 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

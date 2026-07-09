@@ -3,12 +3,13 @@ import { Pressable, SectionList, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { GameCard } from '@/components/GameCard';
+import { Confetti } from '@/components/ui/Confetti';
 import { Screen } from '@/components/ui/Screen';
 import { Txt } from '@/components/ui/Txt';
 import { GAME_CATEGORIES, GAMES, type GameMeta } from '@/data/games';
 import { tap } from '@/lib/haptics';
 import { useGameStore } from '@/store/useGameStore';
-import { palette, radius, spacing } from '@/theme';
+import { gradient, mix, palette, radius, spacing } from '@/theme';
 
 // Group games into menu sections, keeping only non-empty categories.
 const SECTIONS = GAME_CATEGORIES.map((c) => ({
@@ -30,11 +31,12 @@ export default function MenuScreen() {
         stickySectionHeadersEnabled={false}
         ListHeaderComponent={
           <Animated.View style={styles.headerBlock} entering={FadeInDown.duration(420)}>
+            <Confetti />
             <Txt variant="caption" color={palette.textFaint} style={styles.kicker}>
               JEUX DE SOIRÉE
             </Txt>
             <Txt variant="display" style={styles.wordmark}>
-              Party<Txt variant="display" color={palette.violet}>Box</Txt>
+              Party<Txt variant="display" color={palette.violet} style={styles.wordmarkAccent}>Box</Txt>
             </Txt>
 
             <Pressable
@@ -42,10 +44,16 @@ export default function MenuScreen() {
                 tap('light');
                 router.push('/players');
               }}
-              style={({ pressed }) => [styles.playersBanner, pressed && { opacity: 0.85 }]}
+              style={({ pressed }) => [
+                styles.playersBanner,
+                gradient(`linear-gradient(120deg, ${mix(palette.surface, palette.violet, 0.2)}, ${palette.surface} 60%)`),
+                pressed && { opacity: 0.85 },
+              ]}
             >
               <View style={styles.playersLeft}>
-                <Txt style={styles.playersEmoji}>👥</Txt>
+                <View style={styles.playersEmojiWrap}>
+                  <Txt style={styles.playersEmoji}>👥</Txt>
+                </View>
                 <View>
                   <Txt variant="heading" style={{ fontSize: 16 }}>
                     {players.length === 0
@@ -90,7 +98,19 @@ const styles = StyleSheet.create({
   },
   headerBlock: { marginBottom: spacing.sm },
   kicker: { letterSpacing: 2, marginBottom: spacing.xs },
-  wordmark: { marginBottom: spacing.xl },
+  wordmark: {
+    marginBottom: spacing.xl,
+    // Soft violet neon halo around the wordmark.
+    textShadowColor: palette.violet + '80',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 22,
+  },
+  // Stronger, tighter glow on the accented "Box".
+  wordmarkAccent: {
+    textShadowColor: palette.violet,
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 18,
+  },
   playersBanner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -102,7 +122,17 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   playersLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  playersEmoji: { fontSize: 28 },
+  playersEmojiWrap: {
+    width: 46,
+    height: 46,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: palette.bgElevated,
+    borderWidth: 1,
+    borderColor: palette.violet + '44',
+  },
+  playersEmoji: { fontSize: 24 },
   sectionHeader: { marginTop: spacing.xl, marginBottom: spacing.md },
   sectionLabel: { letterSpacing: 1.5 },
   itemWrap: { marginBottom: spacing.md },
