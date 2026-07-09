@@ -13,14 +13,14 @@ import type { GameMeta } from '@/data/games';
 import { fillTemplate, useDeck } from '@/games/_engine/deck';
 import { usePlayerTurn } from '@/games/_engine/usePlayerTurn';
 import { tap } from '@/lib/haptics';
-import { useGameStore } from '@/store/useGameStore';
+import { useGameStore, type Player } from '@/store/useGameStore';
 import { palette, radius, spacing } from '@/theme';
 
 export function TuPreferes({ game }: { game: GameMeta }) {
   const players = useGameStore((s) => s.players);
   const accent = palette[game.accent];
   const intensity = useGameStore((s) => s.settings.intensity);
-  const { current, others, advance } = usePlayerTurn(players);
+  const { current, advance, index } = usePlayerTurn(players);
   const deck = useDeck(intensity === 'hardcore' ? DILEMMES_HOT : DILEMMES);
 
   const [started, setStarted] = useState(false);
@@ -37,11 +37,14 @@ export function TuPreferes({ game }: { game: GameMeta }) {
   }
 
   // Show the current dilemma (names resolved) and queue the pointer forward.
-  const draw = () => {
+  // `turnPlayer` is whoever's turn it is; they're excluded from {autre} so a
+  // card never names the person currently playing.
+  const drawFor = (turnPlayer: Player | undefined) => {
     const d = deck.current;
+    const pool = players.filter((p) => p.id !== turnPlayer?.id).map((p) => p.name);
     setCard(
       d
-        ? { a: fillTemplate(d.a, current?.name, others), b: fillTemplate(d.b, current?.name, others) }
+        ? { a: fillTemplate(d.a, turnPlayer?.name, pool), b: fillTemplate(d.b, turnPlayer?.name, pool) }
         : null,
     );
     deck.next();
@@ -49,14 +52,16 @@ export function TuPreferes({ game }: { game: GameMeta }) {
 
   const startGame = () => {
     tap('medium');
-    draw();
+    drawFor(current);
     setStarted(true);
   };
 
   const next = () => {
+    // advance() is async, so derive the upcoming player explicitly.
+    const nextPlayer = players[(index + 1) % players.length];
     advance();
     setChoice(null);
-    draw();
+    drawFor(nextPlayer);
   };
 
   const Option = ({ side, text }: { side: 'a' | 'b'; text: string }) => {
