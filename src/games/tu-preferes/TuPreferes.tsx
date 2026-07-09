@@ -8,23 +8,25 @@ import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { Txt } from '@/components/ui/Txt';
 import { IntensityToggle } from '@/components/game/IntensityToggle';
-import { DILEMMES, DILEMMES_HOT } from '@/data/decks/tu-preferes';
+import { DILEMMES, DILEMMES_HOT, type Dilemme } from '@/data/decks/tu-preferes';
 import type { GameMeta } from '@/data/games';
-import { useDeck } from '@/games/_engine/deck';
+import { fillTemplate, useDeck } from '@/games/_engine/deck';
 import { usePlayerTurn } from '@/games/_engine/usePlayerTurn';
 import { tap } from '@/lib/haptics';
-import { useGameStore } from '@/store/useGameStore';
+import { useGameStore, type Player } from '@/store/useGameStore';
 import { palette, radius, spacing } from '@/theme';
 
 export function TuPreferes({ game }: { game: GameMeta }) {
   const players = useGameStore((s) => s.players);
   const accent = palette[game.accent];
   const intensity = useGameStore((s) => s.settings.intensity);
-  const { current, advance } = usePlayerTurn(players);
+  const { current, advance, index } = usePlayerTurn(players);
   const deck = useDeck(intensity === 'hardcore' ? DILEMMES_HOT : DILEMMES);
 
   const [started, setStarted] = useState(false);
   const [choice, setChoice] = useState<'a' | 'b' | null>(null);
+  // Filled copy of the current dilemma with {autre} resolved to a participant.
+  const [card, setCard] = useState<Dilemme | null>(null);
 
   if (players.length < game.minPlayers) {
     return (
@@ -34,12 +36,32 @@ export function TuPreferes({ game }: { game: GameMeta }) {
     );
   }
 
-  const dilemme = deck.current;
+  // Show the current dilemma (names resolved) and queue the pointer forward.
+  // `turnPlayer` is whoever's turn it is; they're excluded from {autre} so a
+  // card never names the person currently playing.
+  const drawFor = (turnPlayer: Player | undefined) => {
+    const d = deck.current;
+    const pool = players.filter((p) => p.id !== turnPlayer?.id).map((p) => p.name);
+    setCard(
+      d
+        ? { a: fillTemplate(d.a, turnPlayer?.name, pool), b: fillTemplate(d.b, turnPlayer?.name, pool) }
+        : null,
+    );
+    deck.next();
+  };
+
+  const startGame = () => {
+    tap('medium');
+    drawFor(current);
+    setStarted(true);
+  };
 
   const next = () => {
-    deck.next();
+    // advance() is async, so derive the upcoming player explicitly.
+    const nextPlayer = players[(index + 1) % players.length];
     advance();
     setChoice(null);
+    drawFor(nextPlayer);
   };
 
   const Option = ({ side, text }: { side: 'a' | 'b'; text: string }) => {
@@ -82,20 +104,20 @@ export function TuPreferes({ game }: { game: GameMeta }) {
             </Txt>
             <IntensityToggle />
             <View style={styles.actions}>
-              <Button label="C’est parti" accent={accent} onPress={() => setStarted(true)} />
+              <Button label="C’est parti" accent={accent} onPress={startGame} />
             </View>
           </View>
         ) : (
           <View style={styles.center}>
             {current && <TurnBadge name={current.name} color={current.color} />}
-            <Animated.View key={dilemme?.a} entering={FadeIn.duration(260)} style={styles.options}>
-              <Option side="a" text={dilemme?.a ?? ''} />
+            <Animated.View key={card?.a} entering={FadeIn.duration(260)} style={styles.options}>
+              <Option side="a" text={card?.a ?? ''} />
               <View style={styles.orWrap}>
                 <Txt variant="label" color={palette.textFaint}>
                   OU
                 </Txt>
               </View>
-              <Option side="b" text={dilemme?.b ?? ''} />
+              <Option side="b" text={card?.b ?? ''} />
             </Animated.View>
             <View style={styles.actions}>
               <Button

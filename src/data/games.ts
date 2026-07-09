@@ -164,6 +164,36 @@ export const GAMES: GameMeta[] = [
     minPlayers: 2,
     status: 'ready',
   },
+  {
+    id: 'la-bombe',
+    title: 'La Bombe',
+    tagline: 'Réponds vite… avant que ça pète.',
+    emoji: '💣',
+    accent: 'red',
+    family: 'deck',
+    minPlayers: 2,
+    status: 'ready',
+  },
+  {
+    id: 'paranoia',
+    title: 'Paranoïa',
+    tagline: 'Une question, un secret. Bois pour savoir.',
+    emoji: '😱',
+    accent: 'magenta',
+    family: 'secret',
+    minPlayers: 3,
+    status: 'ready',
+  },
+  {
+    id: 'cadavre-exquis',
+    title: 'Cadavre Exquis',
+    tagline: 'Une histoire délirante, ligne par ligne.',
+    emoji: '📝',
+    accent: 'lime',
+    family: 'team',
+    minPlayers: 2,
+    status: 'ready',
+  },
 
   // ---- Jeux d'alcool "règles" (fiches : prérequis + règles, jeu avec vraies cartes) ----
   {

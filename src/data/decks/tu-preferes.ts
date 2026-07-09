@@ -59,6 +59,20 @@ export const DILEMMES: Dilemme[] = [
   { a: 'Parler à ton toi du passé', b: 'Parler à ton toi du futur' },
   { a: 'Être un génie artistique', b: 'Être un génie du sport' },
   { a: 'Ne plus jamais tomber malade', b: 'Ne plus jamais être fatigué(e)' },
+
+  // ---- Dilemmes qui citent un participant ({autre} = un autre joueur) ----
+  { a: 'Faire un slow avec {autre}', b: 'Boire cul sec' },
+  { a: 'Échanger de vie avec {autre}', b: 'Échanger de vie avec {autre}' },
+  { a: 'Partir en vacances avec {autre}', b: 'Partir seul(e) au bout du monde' },
+  { a: 'Dire un secret à {autre}', b: 'Le dire à tout le groupe' },
+  { a: 'Être coincé(e) dans un ascenseur avec {autre}', b: 'Coincé(e) 1h avec ton ex' },
+  { a: 'Passer une semaine sans ton téléphone', b: 'Une semaine collé(e) à {autre}' },
+  { a: 'Laisser {autre} gérer ton téléphone 1 journée', b: 'Le laisser à tes parents 1 semaine' },
+  { a: 'Devoir imiter {autre} toute la soirée', b: 'Rester muet(te) 30 minutes' },
+  { a: 'Répondre honnêtement à toute question de {autre}', b: 'Boire deux fois' },
+  { a: 'Échanger de garde-robe avec {autre}', b: 'Ne porter que du jaune pendant un mois' },
+  { a: 'Laisser {autre} choisir ta prochaine coupe de cheveux', b: 'Laisser le groupe choisir ton fond d’écran' },
+  { a: 'Faire équipe avec {autre} pour la vie', b: 'Ne jamais avoir de coéquipier(ère)' },
 ];
 
 // ---- Version HARDCORE (18+ assumé, coquin). ----
@@ -90,4 +104,14 @@ export const DILEMMES_HOT: Dilemme[] = [
   { a: 'Draguer un(e) inconnu(e) dans la rue', b: 'Te faire draguer sans savoir répondre' },
   { a: 'Un ex qui devient célèbre', b: 'Un ex qui devient ton voisin' },
   { a: 'Avouer un vieux crush ce soir', b: 'Laisser le groupe deviner qui c’est' },
+
+  // ---- Dilemmes qui citent un participant ({autre} = un autre joueur) ----
+  { a: 'Embrasser {autre}', b: 'Avouer ton dernier fantasme au groupe' },
+  { a: 'Un massage de {autre}', b: 'Masser {autre} pendant 2 minutes' },
+  { a: 'Une nuit torride avec {autre}', b: 'Une nuit torride avec un(e) inconnu(e)' },
+  { a: 'Avouer à {autre} ce que tu penses vraiment de lui/elle', b: 'Enlever un vêtement' },
+  { a: 'Passer 7 minutes seul(e) avec {autre}', b: 'Boire trois fois' },
+  { a: 'Que {autre} lise tes derniers messages', b: 'Les lire à voix haute toi-même' },
+  { a: 'Flirter avec {autre} pendant 1 minute', b: 'Raconter ton pire date' },
+  { a: 'Danser un slow très collé avec {autre}', b: 'Faire un strip-tease de 10 secondes' },
 ];

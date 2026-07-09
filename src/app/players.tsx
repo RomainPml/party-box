@@ -14,7 +14,7 @@ import { Screen } from '@/components/ui/Screen';
 import { Txt } from '@/components/ui/Txt';
 import { tap } from '@/lib/haptics';
 import { useGameStore } from '@/store/useGameStore';
-import { palette, radius, spacing } from '@/theme';
+import { darken, glow, gradient, lighten, palette, radius, spacing } from '@/theme';
 
 export default function PlayersScreen() {
   const players = useGameStore((s) => s.players);
@@ -51,8 +51,13 @@ export default function PlayersScreen() {
             <Pressable
               onPress={submit}
               disabled={!name.trim()}
+              accessibilityRole="button"
+              accessibilityLabel="Ajouter le joueur"
+              accessibilityState={{ disabled: !name.trim() }}
               style={({ pressed }) => [
                 styles.addBtn,
+                gradient(`linear-gradient(150deg, ${lighten(palette.violet, 0.2)}, ${darken(palette.violet, 0.14)})`),
+                glow(palette.violet, 0.4),
                 { opacity: !name.trim() ? 0.4 : pressed ? 0.8 : 1 },
               ]}
             >
@@ -90,6 +95,8 @@ export default function PlayersScreen() {
                       tap('light');
                       removePlayer(item.id);
                     }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Retirer ${item.name}`}
                     hitSlop={10}
                     style={({ pressed }) => [styles.removeBtn, pressed && { opacity: 0.6 }]}
                   >

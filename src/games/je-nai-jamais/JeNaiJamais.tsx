@@ -9,7 +9,8 @@ import { Txt } from '@/components/ui/Txt';
 import { IntensityToggle } from '@/components/game/IntensityToggle';
 import { JAMAIS, JAMAIS_HOT } from '@/data/decks/je-nai-jamais';
 import type { GameMeta } from '@/data/games';
-import { useDeck } from '@/games/_engine/deck';
+import { fillTemplate, useDeck } from '@/games/_engine/deck';
+import { tap } from '@/lib/haptics';
 import { useGameStore } from '@/store/useGameStore';
 import { palette, radius, spacing } from '@/theme';
 
@@ -19,6 +20,8 @@ export function JeNaiJamais({ game }: { game: GameMeta }) {
   const intensity = useGameStore((s) => s.settings.intensity);
   const deck = useDeck(intensity === 'hardcore' ? JAMAIS_HOT : JAMAIS);
   const [started, setStarted] = useState(false);
+  // Filled card with {autre} resolved to a random participant.
+  const [card, setCard] = useState('');
 
   if (players.length < game.minPlayers) {
     return (
@@ -27,6 +30,18 @@ export function JeNaiJamais({ game }: { game: GameMeta }) {
       </Screen>
     );
   }
+
+  // Show the current card (names resolved) and queue the pointer forward.
+  const draw = () => {
+    setCard(fillTemplate(deck.current ?? '', undefined, players.map((p) => p.name)));
+    deck.next();
+  };
+
+  const startGame = () => {
+    tap('medium');
+    draw();
+    setStarted(true);
+  };
 
   return (
     <Screen title={game.title} showBack glowColor={accent}>
@@ -42,13 +57,13 @@ export function JeNaiJamais({ game }: { game: GameMeta }) {
             </Txt>
             <IntensityToggle />
             <View style={styles.actions}>
-              <Button label="C’est parti" accent={accent} onPress={() => setStarted(true)} />
+              <Button label="C’est parti" accent={accent} onPress={startGame} />
             </View>
           </View>
         ) : (
           <View style={styles.center}>
             <Animated.View
-              key={deck.current}
+              key={card}
               entering={FadeIn.duration(260)}
               style={[styles.card, { borderColor: accent }]}
             >
@@ -56,11 +71,11 @@ export function JeNaiJamais({ game }: { game: GameMeta }) {
                 JE N’AI JAMAIS
               </Txt>
               <Txt variant="title" style={styles.cardText}>
-                {deck.current}
+                {card}
               </Txt>
             </Animated.View>
             <View style={styles.actions}>
-              <Button label="Suivant →" accent={accent} onPress={deck.next} />
+              <Button label="Suivant →" accent={accent} onPress={draw} />
             </View>
           </View>
         )}
