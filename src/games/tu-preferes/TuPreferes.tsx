@@ -8,9 +8,9 @@ import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { Txt } from '@/components/ui/Txt';
 import { IntensityToggle } from '@/components/game/IntensityToggle';
-import { DILEMMES, DILEMMES_HOT } from '@/data/decks/tu-preferes';
+import { DILEMMES, DILEMMES_HOT, type Dilemme } from '@/data/decks/tu-preferes';
 import type { GameMeta } from '@/data/games';
-import { useDeck } from '@/games/_engine/deck';
+import { fillTemplate, useDeck } from '@/games/_engine/deck';
 import { usePlayerTurn } from '@/games/_engine/usePlayerTurn';
 import { tap } from '@/lib/haptics';
 import { useGameStore } from '@/store/useGameStore';
@@ -20,11 +20,13 @@ export function TuPreferes({ game }: { game: GameMeta }) {
   const players = useGameStore((s) => s.players);
   const accent = palette[game.accent];
   const intensity = useGameStore((s) => s.settings.intensity);
-  const { current, advance } = usePlayerTurn(players);
+  const { current, others, advance } = usePlayerTurn(players);
   const deck = useDeck(intensity === 'hardcore' ? DILEMMES_HOT : DILEMMES);
 
   const [started, setStarted] = useState(false);
   const [choice, setChoice] = useState<'a' | 'b' | null>(null);
+  // Filled copy of the current dilemma with {autre} resolved to a participant.
+  const [card, setCard] = useState<Dilemme | null>(null);
 
   if (players.length < game.minPlayers) {
     return (
@@ -34,12 +36,27 @@ export function TuPreferes({ game }: { game: GameMeta }) {
     );
   }
 
-  const dilemme = deck.current;
+  // Show the current dilemma (names resolved) and queue the pointer forward.
+  const draw = () => {
+    const d = deck.current;
+    setCard(
+      d
+        ? { a: fillTemplate(d.a, current?.name, others), b: fillTemplate(d.b, current?.name, others) }
+        : null,
+    );
+    deck.next();
+  };
+
+  const startGame = () => {
+    tap('medium');
+    draw();
+    setStarted(true);
+  };
 
   const next = () => {
-    deck.next();
     advance();
     setChoice(null);
+    draw();
   };
 
   const Option = ({ side, text }: { side: 'a' | 'b'; text: string }) => {
@@ -82,20 +99,20 @@ export function TuPreferes({ game }: { game: GameMeta }) {
             </Txt>
             <IntensityToggle />
             <View style={styles.actions}>
-              <Button label="C’est parti" accent={accent} onPress={() => setStarted(true)} />
+              <Button label="C’est parti" accent={accent} onPress={startGame} />
             </View>
           </View>
         ) : (
           <View style={styles.center}>
             {current && <TurnBadge name={current.name} color={current.color} />}
-            <Animated.View key={dilemme?.a} entering={FadeIn.duration(260)} style={styles.options}>
-              <Option side="a" text={dilemme?.a ?? ''} />
+            <Animated.View key={card?.a} entering={FadeIn.duration(260)} style={styles.options}>
+              <Option side="a" text={card?.a ?? ''} />
               <View style={styles.orWrap}>
                 <Txt variant="label" color={palette.textFaint}>
                   OU
                 </Txt>
               </View>
-              <Option side="b" text={dilemme?.b ?? ''} />
+              <Option side="b" text={card?.b ?? ''} />
             </Animated.View>
             <View style={styles.actions}>
               <Button
